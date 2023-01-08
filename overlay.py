@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageEnhance
 import numpy as np
 import cv2 as cv
 import math
@@ -48,12 +48,18 @@ def rhombize(
 
 
 def overlay(im1, im2):
-    img = cv.imread(im2)
-    new_image = np.zeros(img.shape, img.dtype)
+
     brightness = np.random.randint(low=5, high=20) / 10
-    contrast = np.random.randint(low=-50, high=50)
-    new_image = cv.addWeighted(img, brightness, new_image, 0, contrast)
-    cv.imwrite("arrow.jpeg", new_image)
+    contrast = np.random.randint(low=5, high=20) / 10
+    im = Image.open(im2)
+    enhancer = ImageEnhance.Contrast(im)
+    im_output = enhancer.enhance(contrast)
+    enhancer = ImageEnhance.Brightness(im_output)
+    im_output = enhancer.enhance(brightness)
+    im_output.save('arrow.jpeg')
+
+
+
 
     img1 = Image.open(im1)
     img2 = Image.open("arrow.jpeg")
