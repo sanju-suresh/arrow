@@ -48,9 +48,15 @@ def rhombize(
 
 
 def overlay(im1, im2):
+    img = cv.imread(im2)
+    new_image = np.zeros(img.shape, img.dtype)
+    brightness = np.random.randint(low=5, high=20) / 10
+    contrast = np.random.randint(low=-50, high=50)
+    new_image = cv.addWeighted(img, brightness, new_image, 0, contrast)
+    cv.imwrite("arrow.jpeg", new_image)
 
     img1 = Image.open(im1)
-    img2 = Image.open(im2)
+    img2 = Image.open("arrow.jpeg")
 
     img1 = img1.convert('RGBA')
     img2 = img2.convert('RGBA')
@@ -71,17 +77,19 @@ def overlay(im1, im2):
     img.convert('RGBA')
     img = img.rotate(angle+lr*180, fillcolor=(255,255,255,0), resample=Image.BILINEAR)
 
+    print("Size:"+str(img.size))
+
+    if (lr == 0):
+        print("Orientation:Right")
+        print("Position:" + str(np.int0((location[0] + img.size[0] / 2, location[1] + img.size[1] / 2))))
+    else:
+        print("Orientation:Left")
+        print("Position:" + str(np.int0((location[0] - img.size[0] / 2, location[1] - img.size[1] / 2))))
+
+
     img1.paste(img, tuple(location), img)
-    arro = cv.cvtColor( np.array(img) , cv.COLOR_BGR2GRAY)
-
-    corners = cv.goodFeaturesToTrack(arro, 7, 0.5, 0.5)
-    corners = np.int0(corners)
-    # print(location)
-    for corner in corners:
-        print(location[0]+corner[0][0],location[1]+corner[0][1],sep=",")
-
-
     img1.show()
+    img1.save("final.png")
 
     return img1
 
